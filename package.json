@@ -7,16 +7,22 @@
     "node": "^20.19.0 || >=22.12.0"
   },
   "scripts": {
+    "prepare:posts": "node scripts/generate-post-manifest.mjs",
+    "predev": "npm run prepare:posts",
     "dev": "vite",
+    "prebuild": "npm run prepare:posts",
     "build": "vite build",
+    "postbuild": "node scripts/write-spa-fallback.mjs",
     "preview": "vite preview"
   },
   "dependencies": {
     "@vueuse/core": "^13.6.0",
+    "front-matter": "^4.0.2",
     "github-markdown-css": "^5.8.1",
     "highlight.js": "^11.11.1",
     "marked": "^16.1.2",
-    "pinia": "^3.0.3",
+    "marked-highlight": "^2.2.3",
+    "sakura.css": "^1.5.1",
     "vue": "^3.5.18",
     "vue-router": "^4.5.1"
   },

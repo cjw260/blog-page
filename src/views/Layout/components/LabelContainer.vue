@@ -1,8 +1,6 @@
 <script setup>
-import { useAllDataStore } from "@/stores/allData";
-const allDataStore = useAllDataStore();
+import { tagList } from "@/data/posts";
 </script>
-
 
 <template>
   <div class="labelContainer">
@@ -15,13 +13,13 @@ const allDataStore = useAllDataStore();
     </div>
     <div class="labelMainContainer">
       <div
-        style="margin-right: 5px; margin-bottom: 5px"
-        v-for="item in allDataStore.tagList"
+        v-for="item in tagList"
         :key="item.name"
+        style="margin-right: 5px; margin-bottom: 5px"
       >
-        <router-link :to="`/tags/${item.name}`"
-          ><a-tag checkable>{{ item.name }}</a-tag></router-link
-        >
+        <router-link :to="`/tags/${item.name}`">
+          <a-tag checkable>{{ item.name }}</a-tag>
+        </router-link>
       </div>
     </div>
   </div>
@@ -35,6 +33,7 @@ const allDataStore = useAllDataStore();
   box-shadow: 1px 1px 1px rgba(0, 0, 0, 0.1);
   border-radius: 5px;
 }
+
 .labelItemText {
   width: 100%;
   height: 20px;
@@ -45,6 +44,7 @@ const allDataStore = useAllDataStore();
   color: #475b6d;
   margin-bottom: 15px;
 }
+
 .labelMainContainer {
   width: 100%;
   padding: 5px 0 5px 0;

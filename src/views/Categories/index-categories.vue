@@ -1,19 +1,23 @@
 <script setup>
-import { useAllDataStore } from "@/stores/allData";
-const allDataStore = useAllDataStore();
+import { allPosts, categoryList } from "@/data/posts";
 </script>
 
 <template>
   <div class="centerContainer">
     <div class="categoriesTitleContainer">
       <div class="categoriesTitle">分类</div>
-      <div class="categoriesTotal">
-        共计{{ allDataStore.articleList.length }}篇文章
-      </div>
+      <div class="categoriesTotal">共计{{ allPosts.length }}篇文章</div>
     </div>
     <div class="mainContainer">
-      <div class="categoriesItem" v-for="item in allDataStore.categoryList" :key="item.name">
-        <router-link style="text-decoration: none;width: 100%;height: 100%;display: flex;align-items: center;justify-content: center;flex-wrap: wrap;" :to="`categories/${item.name}`">
+      <div
+        v-for="item in categoryList"
+        :key="item.name"
+        class="categoriesItem"
+      >
+        <router-link
+          :to="`/categories/${item.name}`"
+          style="text-decoration: none; width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; flex-wrap: wrap"
+        >
           <div class="categoriesItemTop">{{ item.name }}</div>
           <div class="categoriesItemBottom">共计{{ item.num }}篇文章</div>
         </router-link>
@@ -22,13 +26,12 @@ const allDataStore = useAllDataStore();
   </div>
 </template>
 
-
-
 <style scoped>
 .centerContainer {
   width: 50%;
   flex: 1 1 auto;
 }
+
 .categoriesTitleContainer {
   box-sizing: border-box;
   width: 100%;
@@ -39,6 +42,7 @@ const allDataStore = useAllDataStore();
   border-radius: 10px;
   margin-bottom: 20px;
 }
+
 .categoriesTitle {
   width: 100%;
   height: 60%;
@@ -47,6 +51,7 @@ const allDataStore = useAllDataStore();
   align-items: center;
   font-size: 20px;
 }
+
 .categoriesTotal {
   font-size: 16px;
   width: 100%;
@@ -55,6 +60,7 @@ const allDataStore = useAllDataStore();
   display: flex;
   align-items: center;
 }
+
 .mainContainer {
   box-sizing: border-box;
   width: 100%;
@@ -65,6 +71,7 @@ const allDataStore = useAllDataStore();
   display: flex;
   flex-wrap: wrap;
 }
+
 .categoriesItem {
   width: 30%;
   height: 70px;
@@ -74,6 +81,7 @@ const allDataStore = useAllDataStore();
   flex-wrap: wrap;
   box-sizing: border-box;
 }
+
 .categoriesItemTop {
   width: 100%;
   height: 60%;
@@ -83,6 +91,7 @@ const allDataStore = useAllDataStore();
   justify-content: center;
   align-items: center;
 }
+
 .categoriesItemBottom {
   width: 100%;
   height: 30%;
@@ -92,16 +101,30 @@ const allDataStore = useAllDataStore();
   justify-content: center;
   align-items: center;
 }
+
 .categoriesItem:hover {
   background-color: #f2f5f8;
 }
+
 @media (max-width: 600px) {
-  .categoriesItem{
-    padding: 0;
-    margin-bottom: 2rem;
+  .centerContainer {
+    width: 100%;
   }
-  .mainContainer{
-    justify-content: center;
+
+  .categoriesTitleContainer,
+  .mainContainer {
+    border-radius: 16px;
+    box-shadow: 0 14px 26px rgba(71, 91, 109, 0.08);
+  }
+
+  .categoriesItem {
+    width: calc(50% - 6px);
+    padding: 0;
+    margin-bottom: 12px;
+  }
+
+  .mainContainer {
+    justify-content: space-between;
   }
 }
 </style>

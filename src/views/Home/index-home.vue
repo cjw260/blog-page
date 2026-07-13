@@ -1,90 +1,114 @@
 <script setup>
 import { computed, ref } from "vue";
+import { useElementBounding, useScroll, useWindowSize } from "@vueuse/core";
+import { allPosts } from "@/data/posts";
 import articleItem from "./components/articleItem.vue";
-import { useAllDataStore } from "@/stores/allData";
-import { useScroll } from "@vueuse/core"; //导入监控滚动组件
-const { y } = useScroll(window); //仅监控窗口y轴上的移动
+
+const OVERSCAN = 6;
+const BACK_TO_TOP_THRESHOLD = 300;
+
+const listRootRef = ref(null);
+const { y } = useScroll(window);
+const { height: windowHeight, width: windowWidth } = useWindowSize();
+const { top: listTop } = useElementBounding(listRootRef);
+
+const rowHeight = computed(() => {
+  if (windowWidth.value <= 600) {
+    return 176;
+  }
+
+  if (windowWidth.value <= 900) {
+    return 168;
+  }
+
+  return 161;
+});
+
+const totalHeight = computed(() => allPosts.length * rowHeight.value);
+
+const viewportStart = computed(() =>
+  Math.min(totalHeight.value, Math.max(0, -listTop.value))
+);
+
+const viewportEnd = computed(() =>
+  Math.min(totalHeight.value, Math.max(0, windowHeight.value - listTop.value))
+);
+
+const startIndex = computed(() =>
+  Math.max(0, Math.floor(viewportStart.value / rowHeight.value) - OVERSCAN)
+);
+
+const endIndex = computed(() =>
+  Math.min(
+    allPosts.length,
+    Math.ceil(viewportEnd.value / rowHeight.value) + OVERSCAN
+  )
+);
+
+const visiblePosts = computed(() =>
+  allPosts.slice(startIndex.value, endIndex.value).map((post, index) => ({
+    index: startIndex.value + index,
+    post,
+  }))
+);
+
+const paddingTop = computed(() => startIndex.value * rowHeight.value);
+const paddingBottom = computed(
+  () => (allPosts.length - endIndex.value) * rowHeight.value
+);
+
 const scrollToTop = () => {
   window.scrollTo({
     top: 0,
     behavior: "smooth",
   });
 };
-const allDataStore = useAllDataStore();
-const reversedList = computed(() => [...allDataStore.articleList].reverse());
-let page = ref(1);
-const finalList = ref(reversedList.value.slice(0, 10));
-const handelChangeList = () => {
-  if (page.value * 10 <= reversedList.value.length)
-    finalList.value = reversedList.value.slice(
-      (page.value - 1) * 10,
-      page.value * 10
-    );
-  else
-    finalList.value = reversedList.value.slice(
-      (page.value - 1) * 10,
-      reversedList.value.length
-    );
-};
-const handelAddPage = () => {
-  page.value++;
-  handelChangeList();
-  scrollToTop()
-};
-const handelReducePage = () => {
-  page.value--;
-  handelChangeList();
-  scrollToTop()
-};
 </script>
 
-
 <template>
-  <div class="centerContainer" style="width: 50%; flex: 1 1 auto">
-    <div v-for="item in finalList" :key="item.id">
-      <articleItem :item="item"></articleItem>
-    </div>
-    <div class="pageContainer">
-      <div
-        class="handelPage"
-        v-if="(page - 1) * 10 > 0"
-        @click="handelReducePage()"
-        style="justify-self: start"
+  <div ref="listRootRef" class="centerContainer">
+    <div
+      class="virtualListSpacer"
+      :style="{
+        paddingTop: `${paddingTop}px`,
+        paddingBottom: `${paddingBottom}px`,
+      }"
       >
-        &larr;上一页
-      </div>
       <div
-        class="handelPage"
-        v-if="page * 10 < reversedList.length"
-        @click="handelAddPage()"
-        style="justify-self: end"
+        v-for="item in visiblePosts"
+        :key="item.post.id"
+        class="virtualRow"
+        :style="{ height: `${rowHeight}px` }"
       >
-        &rarr;下一页
+        <articleItem :item="item.post"></articleItem>
       </div>
     </div>
-    <button v-if="y > 300" @click="scrollToTop" class="back-to-top">
-      ↑ 回到顶部
+    <button
+      v-if="y > BACK_TO_TOP_THRESHOLD"
+      class="back-to-top"
+      @click="scrollToTop"
+    >
+      回到顶部
     </button>
   </div>
 </template>
 
 <style scoped>
-.pageContainer {
-  display: grid;
+.centerContainer {
+  width: 50%;
+  flex: 1 1 auto;
+  min-width: 0;
+  position: relative;
+}
+
+.virtualListSpacer {
   width: 100%;
-  height: 50px;
 }
-.handelPage {
-  height: 100%;
-  width: 100px;
-  color: #475b6d;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 16px;
-  font-weight: 800;
-  cursor: pointer;
+
+.virtualRow {
+  width: 100%;
 }
+
 .back-to-top {
   position: fixed;
   right: 30px;
@@ -104,19 +128,29 @@ const handelReducePage = () => {
   background: #40a9ff;
   transform: translateY(-2px);
 }
+
 @media (min-width: 901px) and (max-width: 1199px) {
   .back-to-top {
     display: none;
   }
 }
+
 @media (min-width: 601px) and (max-width: 900px) {
   .back-to-top {
     display: none;
   }
 }
+
 @media (max-width: 600px) {
+  .centerContainer {
+    padding-top: 4px;
+  }
+
   .back-to-top {
-    display: none;
+    right: 18px;
+    bottom: 90px;
+    border-radius: 999px;
+    box-shadow: 0 16px 26px rgba(24, 144, 255, 0.26);
   }
 }
 </style>

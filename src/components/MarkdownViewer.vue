@@ -1,67 +1,98 @@
 <template>
   <div>
-    <div v-if="loading" style="display: flex;align-items: center;justify-content: center;"><a-spin /></div>
+    <div
+      v-if="loading"
+      style="display: flex; align-items: center; justify-content: center"
+    >
+      <a-spin />
+    </div>
     <div v-else class="markdown-body" v-html="renderedMarkdown"></div>
   </div>
 </template>
 
 <script setup>
-import { onMounted } from "vue";
-import { ref } from "vue";
+import { ref, watch } from "vue";
+import matter from "front-matter";
 import { marked } from "marked";
-import hljs from "highlight.js";
-import "highlight.js/styles/atom-one-dark.css"; // 你可以换成其他主题
-import "github-markdown-css/github-markdown.css";
+import "github-markdown-css/github-markdown-light.css";
 
 const props = defineProps({
-  src: String, // 传入 markdown 文件路径
+  src: String,
 });
 
 const loading = ref(false);
 const renderedMarkdown = ref("");
 
-marked.setOptions({
-  highlight: (code, lang) => {
-    return hljs.highlightAuto(code, [lang]).value;
-  },
-});
-
-const loadMarkdown = async () => {
+const loadMarkdown = async (src) => {
   loading.value = true;
+
   try {
-    const res = await fetch(props.src);
-    const mdText = await res.text();
-    renderedMarkdown.value = marked.parse(mdText);
-  } catch (e) {
-    console.error("加载 Markdown 文件失败:", e);
+    const response = await fetch(src);
+    if (!response.ok) {
+      throw new Error(`Request failed with status ${response.status}`);
+    }
+
+    const markdownText = await response.text();
+    const { body } = matter(markdownText);
+    renderedMarkdown.value = marked.parse(body);
+  } catch (error) {
+    console.error("Failed to load markdown file:", error);
     renderedMarkdown.value = '<p style="color:red;">加载失败</p>';
   }
+
   loading.value = false;
 };
 
-// 如果你希望页面加载时自动解析，可以取消下面这行的注释
-onMounted(loadMarkdown);
+watch(
+  () => props.src,
+  (nextSrc) => {
+    if (nextSrc) {
+      loadMarkdown(nextSrc);
+    }
+  },
+  { immediate: true }
+);
 </script>
 
 <style scoped>
 .markdown-body {
   background: #fff;
-  color: #24292f;
-  padding: 2rem;
+  color: #222;
   border-radius: 10px;
   box-shadow: 1px 1px 1px rgba(0, 0, 0, 0.1);
   font-size: 1.1rem;
   line-height: 1.8;
-  /* 可选：让图片不会溢出 */
   word-break: break-word;
   overflow-x: auto;
 }
+
+.markdown-body table {
+  display: block;
+  width: 100%;
+  overflow: auto;
+  border-spacing: 0;
+  border-collapse: collapse;
+}
+
+.markdown-body table tr {
+  background-color: #fff !important;
+  border-top: 1px solid #c6cbd1;
+}
+
+.markdown-body table tr:nth-child(2n) {
+  background-color: #f6f8fa !important;
+}
+
+.markdown-body table th,
+.markdown-body table td {
+  padding: 6px 13px;
+  border: 1px solid #dfe2e5;
+  color: #24292e;
+}
+
 .markdown-body pre {
-  background: #282c34 !important;
-  color: #abb2bf !important;
   border-radius: 8px;
   padding: 1.1rem 1rem;
-  overflow-x: auto;
   margin: 1.5em 0;
   font-size: 1em;
 }
@@ -74,13 +105,13 @@ onMounted(loadMarkdown);
   font-size: 1em;
 }
 
-/* 让代码块内的 code 不继承行内 code 的背景 */
 .markdown-body pre code {
   background: transparent;
   color: inherit;
   padding: 0;
   border-radius: 0;
 }
+
 .markdown-body h1,
 .markdown-body h2,
 .markdown-body h3 {
@@ -105,5 +136,17 @@ onMounted(loadMarkdown);
 .markdown-body img {
   max-width: 100%;
   border-radius: 6px;
+}
+
+@media (min-width: 601px) {
+  .markdown-body {
+    padding: 2rem;
+  }
+}
+
+@media (max-width: 600px) {
+  .markdown-body {
+    padding: 0.6rem;
+  }
 }
 </style>

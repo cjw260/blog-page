@@ -1,9 +1,7 @@
 <script setup>
 import CategoryItem from "./CategoryItem.vue";
-import { useAllDataStore } from "@/stores/allData";
-const allDataStore = useAllDataStore();
+import { archiveList } from "@/data/posts";
 </script>
-
 
 <template>
   <div class="archiveContainer">
@@ -16,11 +14,7 @@ const allDataStore = useAllDataStore();
     </div>
 
     <div class="archiveItemContainer">
-      <div
-        style="width: 100%"
-        v-for="item in allDataStore.timeList"
-        :key="item.name"
-      >
+      <div v-for="item in archiveList" :key="item.name" style="width: 100%">
         <CategoryItem :category="item"></CategoryItem>
       </div>
     </div>
@@ -37,6 +31,7 @@ const allDataStore = useAllDataStore();
   border-radius: 5px;
   margin-bottom: 20px;
 }
+
 .archiveItemText {
   width: 100%;
   height: 20px;
@@ -47,6 +42,7 @@ const allDataStore = useAllDataStore();
   color: #475b6d;
   margin-bottom: 15px;
 }
+
 .archiveItemContainer {
   width: 100%;
   padding: 5px;

@@ -1,37 +1,33 @@
 <script setup>
-import { useAllDataStore } from "@/stores/allData";
-const allDataStore = useAllDataStore();
+import { tagList } from "@/data/posts";
 </script>
 
 <template>
   <div class="centerContainer">
     <div class="categoriesTitleContainer">
       <div class="categoriesTitle">标签</div>
-      <div class="categoriesTotal">
-        共计{{ allDataStore.categoryList.length }}个标签
-      </div>
+      <div class="categoriesTotal">共计{{ tagList.length }}个标签</div>
     </div>
     <div class="mainContainer">
       <div
-        style="margin-right: 5px; margin-bottom: 5px"
-        v-for="item in allDataStore.tagList"
+        v-for="item in tagList"
         :key="item.name"
+        style="margin-right: 5px; margin-bottom: 5px"
       >
-        <router-link :to="`/tags/${item.name}`"
-          ><a-tag checkable>{{ item.name }}</a-tag></router-link
-        >
+        <router-link :to="`/tags/${item.name}`">
+          <a-tag checkable>{{ item.name }}</a-tag>
+        </router-link>
       </div>
     </div>
   </div>
 </template>
-
-
 
 <style scoped>
 .centerContainer {
   width: 50%;
   flex: 1 1 auto;
 }
+
 .categoriesTitleContainer {
   box-sizing: border-box;
   width: 100%;
@@ -42,6 +38,7 @@ const allDataStore = useAllDataStore();
   border-radius: 10px;
   margin-bottom: 20px;
 }
+
 .categoriesTitle {
   width: 100%;
   height: 60%;
@@ -50,6 +47,7 @@ const allDataStore = useAllDataStore();
   align-items: center;
   font-size: 20px;
 }
+
 .categoriesTotal {
   font-size: 16px;
   width: 100%;
@@ -58,6 +56,7 @@ const allDataStore = useAllDataStore();
   display: flex;
   align-items: center;
 }
+
 .mainContainer {
   box-sizing: border-box;
   width: 100%;

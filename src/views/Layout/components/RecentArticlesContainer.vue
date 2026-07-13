@@ -1,9 +1,6 @@
 <script setup>
-import { useAllDataStore } from '@/stores/allData';
-const allDataStore = useAllDataStore()
-
+import { recentPosts } from "@/data/posts";
 </script>
-
 
 <template>
   <div class="recentArticlesContainer">
@@ -15,13 +12,16 @@ const allDataStore = useAllDataStore()
       最近文章
     </div>
 
-    <div class="articlesItemContainer" v-for="item in allDataStore.articleList.slice(-4).reverse()" :key="item.id">
-      <div class="articlesTime">{{ item.id.replace(/^(\d{4})(\d{2})(\d{2}).*/, "$1.$2.$3") }}</div>
-      <router-link style="text-decoration: none; width: 95%" :to="`article/${item.id}`">
+    <div
+      v-for="item in recentPosts"
+      :key="item.id"
+      class="articlesItemContainer"
+    >
+      <div class="articlesTime">{{ item.date.replace(/-/g, ".") }}</div>
+      <router-link style="text-decoration: none; width: 95%" :to="`/article/${item.id}`">
         <div class="articlesTitle">{{ item.title }}</div>
       </router-link>
     </div>
-
   </div>
 </template>
 
@@ -35,6 +35,7 @@ const allDataStore = useAllDataStore()
   border-radius: 5px;
   margin-bottom: 20px;
 }
+
 .recentArticlesItemText {
   width: 100%;
   height: 20px;
@@ -45,25 +46,29 @@ const allDataStore = useAllDataStore()
   color: #475b6d;
   margin-bottom: 15px;
 }
+
 .articlesItemContainer {
   width: 100%;
   padding: 5px;
   display: flex;
   flex-wrap: wrap;
 }
+
 .articlesTime {
   color: #475b6d;
   font-size: 12px;
   width: 100%;
   margin-bottom: 10px;
 }
+
 .articlesTitle {
   color: #475b6d;
   font-size: 16px;
   padding: 5px;
   width: 100%;
-  transition: background-color 0.4s ease; /* 背景色过渡 */
+  transition: background-color 0.4s ease;
 }
+
 .articlesTitle:hover {
   background-color: #f2f5f8;
 }
