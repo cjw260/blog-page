@@ -62,6 +62,7 @@ const toPostMeta = async (fileName) => {
     path: `/blog/markdown/${fileName}`,
     title: String(attributes.title ?? id).trim(),
     date,
+    updatedAt: typeof attributes.updated_at === "string" ? attributes.updated_at.trim() : "",
     year: date.slice(0, 4),
     category: String(attributes.category ?? "其他").trim(),
     tags,
