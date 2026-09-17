@@ -1,9 +1,10 @@
 FROM node:24.14.1-bookworm-slim@sha256:b506e7321f176aae77317f99d67a24b272c1f09f1d10f1761f2773447d8da26c AS build
 WORKDIR /app
-COPY package.json package-lock.json ./
-RUN npm ci
+ENV ASTRO_TELEMETRY_DISABLED=1
+COPY package.json pnpm-lock.yaml ./
+RUN npm install --global pnpm@10.30.0 && pnpm install --frozen-lockfile --ignore-scripts
 COPY . .
-RUN npm run build
+RUN pnpm build && pnpm test
 
 FROM nginx:1.28.0-alpine@sha256:30f1c0d78e0ad60901648be663a710bdadf19e4c10ac6782c235200619158284 AS web
 COPY deploy/nginx.conf /etc/nginx/nginx.conf
