@@ -70,8 +70,10 @@ export default defineConfig({
       animationClass: 'transition-swup-',
       containers: ['#swup-container'],
       smoothScrolling: false,
-      cache: true,
-      preload: { hover: true, visible: true },
+      // Read fresh HTML on navigation so deployments invalidate image versions.
+      // Images remain independently cached; persist matching avatar DOM nodes.
+      cache: false,
+      preload: false,
       accessibility: true,
       progress: true,
       updateHead: true,

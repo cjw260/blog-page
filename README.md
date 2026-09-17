@@ -54,3 +54,7 @@ Nginx 直接服务生成的 HTML；不存在的文章与 Markdown 返回 404，�
 统计数据库持久化于服务器 `/opt/cjw-sites/blog-page/data/stats/stats.sqlite3`，不在镜像内，不随发布清空。每次部署前使用 SQLite 在线备份，保留最近 7 份于 `backups/stats/`。`STATS_IMAGE` 与 `WEB_IMAGE` 都由 Actions 构建并按固定摘要部署；统计容器无公网端口，无发布服务或 Git 凭证，限制为 96 MiB 内存。
 
 验证：`python3 -m unittest discover -s stats -q` 覆盖 PV/UV、并发、重试去重、持久化、页面白名单、同源要求及限流。`pnpm check && pnpm type-check && pnpm build && pnpm test` 验证博客构建与文章契约。
+
+## 头像缓存与更新
+
+首页头像、导航 Logo 和 favicon 使用图片内容的 SHA-256 摘要作为 URL 版本号；相同图片跨页面/跨部署沿用缓存，图片字节变化后版本号自动变化。`/blog/profile.jpeg?v=<16位摘要>` 长期缓存，未带有效版本号的原地址保持重新验证。翻页通过版本相关的 `data-swup-persist` 保留已加载头像元素，版本改变时自动替换。站内导航不长期缓存 HTML，保证下次翻页能读取最新发布版本。更新时仍替换 `public/profile.jpeg` 并提交，不需要手工改版本号或要求访客清除图片缓存。

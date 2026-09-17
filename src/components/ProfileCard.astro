@@ -1,4 +1,5 @@
 ---
+import { versionedImage } from '@/lib/versioned-image.mjs'
 import '@/styles/ProfileCard.css'
 import Icon from '@/components/Icon.astro'
 import { defaultLang, type Lang, useTranslations } from '@/i18n/ui'
@@ -28,6 +29,7 @@ interface Social {
 }
 
 const { lang = defaultLang } = Astro.props
+const avatar = versionedImage(siteConfig.avatar, siteConfig.base)
 const t = useTranslations(lang)
 
 const posts = await getPublishedPosts()
@@ -88,7 +90,7 @@ const isExternal = (url: string) => /^(https?:|mailto:)/.test(url)
   <div class="card">
     <div class="row-top">
       <div class="user-area">
-        <img class="avatar" src={siteConfig.avatar} alt={siteConfig.author} width="64" height="64" />
+        <img class="avatar" src={avatar} data-swup-persist={`profile-avatar-${avatar.split('v=')[1]}`} decoding="sync" alt={siteConfig.author} width="64" height="64" />
         <div class="user-meta">
           <div class="username">
             {siteConfig.author}

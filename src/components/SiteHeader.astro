@@ -1,4 +1,5 @@
 ---
+import { versionedImage } from '@/lib/versioned-image.mjs'
 import Icon from '@/components/Icon.astro'
 import { defaultLang, type Lang, localePath, useTranslations } from '@/i18n/ui'
 import { mdiMenu } from '@/lib/icons'
@@ -40,7 +41,7 @@ function isActive(path: string): boolean {
       href={localePath(lang, '/')}
       class="flex items-center gap-2 font-serif text-xl font-bold tracking-tight"
     >
-      <img class="h-7 w-7" src={siteConfig.logo} alt="Logo" width="28" height="28" />
+      <img class="h-7 w-7" src={versionedImage(siteConfig.logo, siteConfig.base)} alt="Logo" width="28" height="28" />
       <span>{siteConfig.title}</span>
     </a>
 

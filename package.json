@@ -12,7 +12,7 @@
     "format": "biome format --write ./src",
     "format:all": "biome check --write ./src ./scripts ./astro.config.mjs ./biome.json ./package.json ./tsconfig.json",
     "lint": "biome check --write ./src",
-    "test": "node --test scripts/migration.test.mjs"
+    "test": "node --test scripts/migration.test.mjs scripts/versioned-image.test.mjs"
   },
   "packageManager": "pnpm@10.30.0",
   "engines": {
