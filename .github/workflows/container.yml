@@ -95,6 +95,16 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
+          retry_connection() {
+            local attempt result
+            for attempt in 1 2 3; do
+              if "$@"; then return 0; else result=$?; fi
+              # SSH transport failures are safe to retry; application failures are not.
+              if [[ "$result" != 255 || "$attempt" == 3 ]]; then return "$result"; fi
+              echo "SSH connection interrupted; retrying ($attempt/3)."
+              sleep 5
+            done
+          }
           # A queued run must not deploy an older main commit over a newer one.
           current_sha=$(gh api "repos/$GITHUB_REPOSITORY/commits/main" --jq .sha)
           if [[ "$current_sha" != "$GITHUB_SHA" ]]; then
@@ -105,9 +115,12 @@ jobs:
           ssh_opts=(-i ~/.ssh/deploy_key -o BatchMode=yes -o StrictHostKeyChecking=yes -o ConnectTimeout=15)
           printf 'WEB_IMAGE=%s\nSTATS_IMAGE=%s\n' "$WEB_IMAGE" "$STATS_IMAGE" > deploy/images.env
 
-          ssh "${ssh_opts[@]}" -p "$DEPLOY_PORT" "$DEPLOY_USER@$DEPLOY_HOST" "mkdir -p '$release'"
-          scp "${ssh_opts[@]}" -P "$DEPLOY_PORT" deploy/compose.yaml deploy/deploy.sh deploy/images.env "$DEPLOY_USER@$DEPLOY_HOST:$release/"
-          printf '%s\n' "$GH_TOKEN" | ssh "${ssh_opts[@]}" -p "$DEPLOY_PORT" "$DEPLOY_USER@$DEPLOY_HOST" "bash '$release/deploy.sh' '$GITHUB_ACTOR'"
+          retry_connection ssh "${ssh_opts[@]}" -p "$DEPLOY_PORT" "$DEPLOY_USER@$DEPLOY_HOST" "mkdir -p '$release'"
+          retry_connection scp "${ssh_opts[@]}" -P "$DEPLOY_PORT" deploy/compose.yaml deploy/deploy.sh deploy/images.env "$DEPLOY_USER@$DEPLOY_HOST:$release/"
+          deploy_release() {
+            printf '%s\n' "$GH_TOKEN" | ssh "${ssh_opts[@]}" -p "$DEPLOY_PORT" "$DEPLOY_USER@$DEPLOY_HOST" "bash '$release/deploy.sh' '$GITHUB_ACTOR'"
+          }
+          retry_connection deploy_release
       - name: Remove temporary SSH identity
         if: always()
         run: rm -f ~/.ssh/deploy_key
