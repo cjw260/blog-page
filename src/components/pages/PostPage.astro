@@ -91,8 +91,8 @@ const postYear = formatDate(post.data.published).slice(0, 4)
                 data-stats-path={statsPath}
               >
                 <Icon d={mdiEye} class="text-sm" />
-                <span data-stats="article-pv">-</span>
-                {visitorsUnit}
+                <span data-stats="article-pv" title="浏览次数（PV）">-</span>
+                {t('profile.pvUnit')}
               </span>
               <span class="text-line">|</span>
               <span
@@ -100,7 +100,7 @@ const postYear = formatDate(post.data.published).slice(0, 4)
                 data-stats-path={statsPath}
               >
                 <Icon d={mdiAccountOutline} class="text-sm" />
-                <span data-stats="article-uv">-</span>
+                <span data-stats="article-uv" title="独立访客（UV，按浏览器去重）">-</span>
                 {visitorsUnit}
               </span>
             </>
