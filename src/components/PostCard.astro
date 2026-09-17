@@ -68,22 +68,24 @@ const statsEnabled = Boolean(siteConfig.statsScript)
     )
   }
 
+  <div class="card-footer">
+  {post.data.updated && <span class="card-badge card-btn-left" title="最近更新时间"><Icon d={mdiUpdate} class="mr-1 text-[11px]" />{formatDate(post.data.updated)}</span>}
   <div class="card-actions">
     {
       statsEnabled && (
         <span
           class="card-badge card-btn-adjacent"
-          data-stats-path={`/article/${post.id}`}
+          data-stats-path={postUrl}
         >
           <Icon d={mdiEye} class="mr-1 text-[11px]" />
-          <span data-stats="article-pv">-</span>
+          <span data-stats="article-pv" title="浏览次数（PV）">-</span>
           <Icon d={mdiAccountOutline} class="ml-2 mr-1 text-[11px]" />
-          <span data-stats="article-uv">-</span>
+          <span data-stats="article-uv" title="独立访客（UV，按浏览器去重）">-</span>
         </span>
       )
     }
     <a href={postUrl} class="card-badge card-btn">{t('list.readMore')}</a>
   </div>
-  {post.data.updated && <span class="card-badge card-btn-left"><Icon d={mdiUpdate} class="mr-1 text-[11px]" />{formatDate(post.data.updated)}</span>}
+  </div>
 </article>
 

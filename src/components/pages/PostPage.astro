@@ -38,7 +38,7 @@ const category = post.data.category
 const tags = post.data.tags
 
 const statsEnabled = Boolean(siteConfig.statsScript)
-const statsPath = `/article/${post.id}`
+const statsPath = localePath(lang, `/article/${post.id}`)
 
 const copyIdleHtml = `${iconSvg('mdi-content-copy')}<span>${t('post.copy')}</span>`
 const copyDoneHtml = `${iconSvg('mdi-check')}<span>${t('post.copied')}</span>`

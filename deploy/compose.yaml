@@ -2,6 +2,8 @@ services:
   web:
     image: ${WEB_IMAGE:?Missing immutable web image}
     ports: ["127.0.0.1:18081:8080"]
+    depends_on:
+      stats: {condition: service_healthy}
     mem_limit: 96m
     cpus: 0.5
     restart: unless-stopped
@@ -13,3 +15,18 @@ services:
     logging:
       driver: json-file
       options: {max-size: "10m", max-file: "3"}
+  stats:
+    image: ${STATS_IMAGE:?Missing immutable stats image}
+    user: "1003:1003"
+    volumes: ["/opt/cjw-sites/blog-page/data/stats:/data"]
+    mem_limit: 96m
+    cpus: 0.25
+    restart: unless-stopped
+    read_only: true
+    tmpfs: ["/tmp:size=16m,mode=1777"]
+    cap_drop: [ALL]
+    security_opt: [no-new-privileges:true]
+    pids_limit: 64
+    logging:
+      driver: json-file
+      options: {max-size: "5m", max-file: "2"}

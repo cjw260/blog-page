@@ -20,3 +20,9 @@ pnpm-debug.log*
 
 # macOS
 .DS_Store
+
+# Python runtime/test artifacts
+__pycache__/
+**/__pycache__/
+*.pyc
+*.sqlite3*

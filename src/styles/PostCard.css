@@ -104,3 +104,9 @@ article {
     bottom: -4px;
   }
 }
+
+/* Keep date, counters and link readable together on narrow screens. */
+.card-footer { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px; margin: 14px -29px -25px; }
+.card-footer .card-actions { position: static; margin-left: auto; flex-wrap: wrap; }
+.card-footer .card-btn-left { position: static; }
+@media (max-width: 768px) { .card-footer { margin: 14px -20px -20px; } }
