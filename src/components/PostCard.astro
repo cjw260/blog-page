@@ -15,7 +15,12 @@ const { lang = defaultLang, post } = Astro.props
 const t = useTranslations(lang)
 
 const title = post.data.title
-const date = formatDate(post.data.published)
+const published = post.data.published
+// Legacy articles without an update record retain their publication date.
+const updated = post.data.updated ?? published
+const updatedTitle = post.data.updated
+  ? '最近更新时间'
+  : '暂无独立更新记录，显示发布时间'
 const words = wordCount(post)
 const mins = readMinutes(post)
 const excerpt = excerptOf(post)
@@ -39,9 +44,9 @@ const statsEnabled = Boolean(siteConfig.statsScript)
   </h2>
 
   <div class="flex items-center gap-2 text-[0.82rem] text-ink-3">
-    <span class="inline-flex items-center gap-1">
+    <span class="inline-flex items-center gap-1" title="发布时间">
       <Icon d={mdiCalendarOutline} class="text-sm" />
-      {date}
+      <time datetime={published.toISOString()}>{formatDate(published)}</time>
     </span>
     <span class="text-line">·</span>
     <span>{words}
@@ -69,7 +74,10 @@ const statsEnabled = Boolean(siteConfig.statsScript)
   }
 
   <div class="card-footer">
-  {post.data.updated && <span class="card-badge card-btn-left" title="最近更新时间"><Icon d={mdiUpdate} class="mr-1 text-[11px]" />{formatDate(post.data.updated)}</span>}
+  <span class="card-badge card-btn-left" title={updatedTitle}>
+    <Icon d={mdiUpdate} class="mr-1 text-[11px]" />
+    <time datetime={updated.toISOString()}>{formatDate(updated)}</time>
+  </span>
   <div class="card-actions">
     {
       statsEnabled && (
