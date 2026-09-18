@@ -75,7 +75,9 @@ test('built pages keep source date precision and omit invented modification date
       assert.ok(html.includes(`<time datetime="${attribute}">${display}</time>`), `${file}: missing ${display}`)
       expectedTimes.push(`<time datetime="${attribute}">${display}</time>`)
     }
-    assert.deepEqual(card.match(/<time\b[^>]*>.*?<\/time>/g), expectedTimes, file)
+    const cardTimes = expectedTimes.length === 1 ? [expectedTimes[0], expectedTimes[0]] : expectedTimes
+    assert.deepEqual(card.match(/<time\b[^>]*>.*?<\/time>/g), cardTimes, file)
+    assert.ok(card.includes('<span class="card-badge card-btn-left">'), file)
     if (!dates.updated && !dates.updated_at) {
       assert.ok(!html.includes('"dateModified":'), file)
       assert.ok(!html.includes('article:modified_time'), file)
