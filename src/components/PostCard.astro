@@ -5,6 +5,7 @@ import { defaultLang, type Lang, localePath, useTranslations } from '@/i18n/ui'
 import { mdiAccountOutline, mdiCalendarOutline, mdiEye, mdiUpdate } from '@/lib/icons'
 import { excerptOf, formatDate, type Post, readMinutes, wordCount } from '@/lib/posts'
 import { siteConfig } from '@/site.config'
+import { postDateAttribute } from '@/lib/post-dates'
 
 interface Props {
   lang?: Lang
@@ -16,11 +17,7 @@ const t = useTranslations(lang)
 
 const title = post.data.title
 const published = post.data.published
-// Legacy articles without an update record retain their publication date.
-const updated = post.data.updated ?? published
-const updatedTitle = post.data.updated
-  ? '最近更新时间'
-  : '暂无独立更新记录，显示发布时间'
+const updated = post.data.updated
 const words = wordCount(post)
 const mins = readMinutes(post)
 const excerpt = excerptOf(post)
@@ -46,7 +43,7 @@ const statsEnabled = Boolean(siteConfig.statsScript)
   <div class="flex items-center gap-2 text-[0.82rem] text-ink-3">
     <span class="inline-flex items-center gap-1" title="发布时间">
       <Icon d={mdiCalendarOutline} class="text-sm" />
-      <time datetime={published.toISOString()}>{formatDate(published)}</time>
+      <time datetime={postDateAttribute(published, post.data.publishedHasTime)}>{formatDate(published, post.data.publishedHasTime)}</time>
     </span>
     <span class="text-line">·</span>
     <span>{words}
@@ -74,10 +71,10 @@ const statsEnabled = Boolean(siteConfig.statsScript)
   }
 
   <div class="card-footer">
-  <span class="card-badge card-btn-left" title={updatedTitle}>
+  {updated && <span class="card-badge card-btn-left" title="最近更新时间">
     <Icon d={mdiUpdate} class="mr-1 text-[11px]" />
-    <time datetime={updated.toISOString()}>{formatDate(updated)}</time>
-  </span>
+    <time datetime={postDateAttribute(updated, post.data.updatedHasTime)}>{formatDate(updated, post.data.updatedHasTime)}</time>
+  </span>}
   <div class="card-actions">
     {
       statsEnabled && (
@@ -96,4 +93,3 @@ const statsEnabled = Boolean(siteConfig.statsScript)
   </div>
   </div>
 </article>
-

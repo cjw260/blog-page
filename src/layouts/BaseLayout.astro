@@ -46,7 +46,7 @@ const jsonLd =
         description,
         image: ogImageURL.href,
         ...(publishedTime ? { datePublished: publishedTime } : {}),
-        ...(modifiedTime || publishedTime ? { dateModified: modifiedTime || publishedTime } : {}),
+        ...(modifiedTime ? { dateModified: modifiedTime } : {}),
         author: { '@type': 'Person', name: siteConfig.author },
         publisher: {
           '@type': 'Organization',
