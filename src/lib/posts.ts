@@ -38,8 +38,8 @@ export function readMinutes(post: Post): number {
 }
 
 // 日期格式化 YYYY-MM-DD HH:mm
-export function formatDate(date: Date): string {
-  return dayjs(date).utcOffset(8).format('YYYY-MM-DD HH:mm')
+export function formatDate(date: Date, hasTime = true): string {
+  return dayjs(date).utcOffset(8).format(hasTime ? 'YYYY-MM-DD HH:mm' : 'YYYY-MM-DD')
 }
 
 // 摘要：description 优先，否则从正文顺序提取 120 字

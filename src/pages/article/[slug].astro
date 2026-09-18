@@ -3,6 +3,7 @@ import PostPage from '@/components/pages/PostPage.astro'
 import { defaultLang } from '@/i18n/ui'
 import BaseLayout from '@/layouts/BaseLayout.astro'
 import { getPublishedPosts, type Post } from '@/lib/posts'
+import { postDateAttribute } from '@/lib/post-dates'
 
 export async function getStaticPaths() {
   const posts = await getPublishedPosts()
@@ -27,8 +28,8 @@ const firstImage = post.body?.match(/!\[[^\]]*\]\(([^)\s]+)/)?.[1]
   description={post.data.description}
   showTocButton
   seoType="article"
-  publishedTime={post.data.published.toISOString()}
-  modifiedTime={post.data.updated?.toISOString()}
+  publishedTime={postDateAttribute(post.data.published, post.data.publishedHasTime)}
+  modifiedTime={post.data.updated ? postDateAttribute(post.data.updated, post.data.updatedHasTime) : undefined}
   seoImage={firstImage}
 >
   <PostPage lang={lang} post={post} prevPost={prevPost} nextPost={nextPost} />

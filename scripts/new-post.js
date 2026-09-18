@@ -3,7 +3,11 @@ import path from 'node:path'
 import process from 'node:process'
 
 const slug = process.argv[2] || `post-${new Date().toISOString().slice(0, 10)}`
-const dir = path.resolve('src/content/posts')
+if (!/^[\p{L}\p{N}_-]+$/u.test(slug)) {
+  console.error('Article ID may contain letters, numbers, underscores and hyphens only')
+  process.exit(1)
+}
+const dir = path.resolve('public/markdown')
 const file = path.join(dir, `${slug}.md`)
 
 if (existsSync(file)) {
@@ -15,17 +19,15 @@ if (existsSync(file)) {
 mkdirSync(dir, { recursive: true })
 
 const now = new Date()
-const pad = (n) => String(n).padStart(2, '0')
-const datetime = `${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(now.getDate())} ${pad(now.getHours())}:${pad(now.getMinutes())}:${pad(now.getSeconds())}`
+const datetime = now.toISOString()
 
 const template = `---
-title: "${slug}"
-slug:
+title: ${JSON.stringify(slug)}
 index: 0
 description: "一句话摘要"
 category: "未分类"
 tags: []
-published: ${datetime}
+published: "${datetime}"
 ---
 
 从这里开始写作。

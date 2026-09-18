@@ -19,6 +19,7 @@ import {
 } from '@/lib/icons'
 import { formatDate, type Post, readMinutes, wordCount } from '@/lib/posts'
 import { siteConfig } from '@/site.config'
+import { postDateAttribute } from '@/lib/post-dates'
 
 interface Props {
   lang?: Lang
@@ -30,8 +31,8 @@ interface Props {
 const { lang = defaultLang, post, prevPost = null, nextPost = null } = Astro.props
 const t = useTranslations(lang)
 
-const date = formatDate(post.data.published)
-const updated = post.data.updated ? formatDate(post.data.updated) : ''
+const date = formatDate(post.data.published, post.data.publishedHasTime)
+const updated = post.data.updated ? formatDate(post.data.updated, post.data.updatedHasTime) : ''
 const words = wordCount(post)
 const mins = readMinutes(post)
 const category = post.data.category
@@ -62,7 +63,7 @@ const postYear = formatDate(post.data.published).slice(0, 4)
       <div class="flex flex-wrap items-center justify-center gap-3">
         <span class="inline-flex items-center gap-1">
           <Icon d={mdiCalendarOutline} class="text-sm" />
-          {date}
+          <time datetime={postDateAttribute(post.data.published, post.data.publishedHasTime)}>{date}</time>
         </span>
         <span class="text-line">|</span>
         <a href={categoryUrl} class="inline-flex items-center gap-1 transition hover:text-accent">
@@ -112,7 +113,7 @@ const postYear = formatDate(post.data.published).slice(0, 4)
           <div class="flex flex-wrap items-center justify-center gap-3">
             <span class="inline-flex items-center gap-1">
               <Icon d={mdiUpdate} class="text-sm" />
-              {t('post.updated')} {updated}
+              {t('post.updated')} <time datetime={postDateAttribute(post.data.updated!, post.data.updatedHasTime)}>{updated}</time>
             </span>
           </div>
         )
