@@ -18,6 +18,9 @@ const t = useTranslations(lang)
 const title = post.data.title
 const published = post.data.published
 const updated = post.data.updated
+const footerDate = updated ?? published
+const footerHasTime = updated ? post.data.updatedHasTime : post.data.publishedHasTime
+const footerTitle = updated ? '最近更新时间' : '首次发布时间'
 const words = wordCount(post)
 const mins = readMinutes(post)
 const excerpt = excerptOf(post)
@@ -71,10 +74,10 @@ const statsEnabled = Boolean(siteConfig.statsScript)
   }
 
   <div class="card-footer">
-  {updated && <span class="card-badge card-btn-left" title="最近更新时间">
-    <Icon d={mdiUpdate} class="mr-1 text-[11px]" />
-    <time datetime={postDateAttribute(updated, post.data.updatedHasTime)}>{formatDate(updated, post.data.updatedHasTime)}</time>
-  </span>}
+  <span class="card-badge card-btn-left" title={footerTitle}>
+    <Icon d={updated ? mdiUpdate : mdiCalendarOutline} class="mr-1 text-[11px]" />
+    <time datetime={postDateAttribute(footerDate, footerHasTime)}>{formatDate(footerDate, footerHasTime)}</time>
+  </span>
   <div class="card-actions">
     {
       statsEnabled && (
